@@ -32,4 +32,11 @@ export default defineConfig({
     },
   ],
   fastRefresh: {},
+  "proxy": {
+    "/api": {
+      "target": "https://pvp.qq.com",
+      "changeOrigin": true,
+      "pathRewrite": { "^/api": "" }
+    }
+  }
 });

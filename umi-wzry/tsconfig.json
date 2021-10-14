@@ -24,8 +24,8 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["src/*"],
-      "@@/*": ["src/.umi/*"]
-    }
+      "@@/*": ["./src/.umi/*"] // 解决 umi 找不到部分模块的问题
+},
   },
   "exclude": [
     "node_modules",

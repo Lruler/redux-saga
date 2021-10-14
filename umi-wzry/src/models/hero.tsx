@@ -1,6 +1,6 @@
-import { Effect, Reducer, Subscription, request } from "umi"
+import { Effect, Reducer, Subscription, request } from 'umi';
 
-interface HeroProps {
+export interface HeroProps {
   ename: number;
   cname: string;
   title: string;
@@ -11,6 +11,9 @@ interface HeroProps {
 export interface HeroModelState {
   name: string;
   heros: HeroProps[];
+  freeheros: HeroProps[];
+  filterKey: number;
+  itemHover: number;
 }
 
 export interface HeroModelType {
@@ -32,15 +35,25 @@ const HeroModel: HeroModelType = {
   state: {
     name: 'hero',
     heros: [],
+    freeheros: [],
+    filterKey: 0,
+    itemHover: 0
   },
 
   effects: {
-    *query({ payload }, { call, put }) {
-
-    },
     *fetch({ type, payload }, { put, call, select }) {
       const data = yield request('/web201605/js/herolist.json');
-      const localdata = [
+      const freeheros = yield request('mock/freeheros.json', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify({
+          number: 10,
+        }),
+      });
+      const localData = [
         {
           ename: 105,
           cname: '廉颇',
@@ -61,14 +74,21 @@ const HeroModel: HeroModelType = {
       yield put({
         type: 'save',
         payload: {
-          heros: data || localdata,
+          heros: data || localData,
+          freeheros
         },
       });
+    },
+    *query({ payload }, { call, put }) {
+
     },
   },
   reducers: {
     save(state, action) {
-      return { ...state, ...action.payload };
+      return {
+        ...state,
+        ...action.payload,
+      };
     },
   },
   subscriptions: {

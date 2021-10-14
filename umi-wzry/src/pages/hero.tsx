@@ -1,10 +1,13 @@
 import React, { FC } from 'react';
+import { connect, HeroModelState, ConnectProps } from 'umi';
 import { Row, Col, Radio, Card } from 'antd';
 import { RadioChangeEvent } from 'antd/es/radio/interface';
-import { connect, HeroModelState, ConnectProps } from 'umi'; 
+import FreeHeroItem from '@/components/FreeHeroItem';
+
 import styles from './hero.less';
 
 const RadioGroup = Radio.Group;
+
 interface PageProps extends ConnectProps {
   hero: HeroModelState;
 }
@@ -19,12 +22,48 @@ const heroType = [
   { key: 6, value: '辅助' },
 ];
 
-const Hero: FC<PageProps> = (props) => {
-  const { heros = []} = props.hero
+const Hero: FC<PageProps> = ({ hero, dispatch }) => {
+  const { heros = [], filterKey = 0, freeheros = [], itemHover = 0 } = hero;
+  console.log(freeheros)
+  const onChange = (e: RadioChangeEvent) => {
+    dispatch!({
+      type: "hero/save", payload: {
+        filterKey: e.target.value
+      }
+    })
+  };
+  const onItemHover = (index: number) => {
+    dispatch!({
+      type: 'hero/save',
+      payload: {
+        itemHover: index
+      },
+    });
+  }
   return (
-    <div>
+    <div className={styles.normal}>
+      <div className={styles.info}>
+        <Row className={styles.freehero}>
+          <Col span={24}>
+            <p>周免英雄</p>
+            <div>
+              {
+                freeheros.map((data, index) => (
+                  <FreeHeroItem
+                    data={data}
+                    itemHover={itemHover}
+                    onItemHover={onItemHover}
+                    thisIndex={index}
+                    key={index}
+                  />
+                ))
+              }
+            </div>
+          </Col>
+        </Row>
+      </div>
       <Card className={styles.radioPanel}>
-        <RadioGroup >
+        <RadioGroup onChange={onChange} value={filterKey}>
           {heroType.map(data => (
             <Radio value={data.key} key={`hero-rodio-${data.key}`}>
               {data.value}
@@ -33,7 +72,7 @@ const Hero: FC<PageProps> = (props) => {
         </RadioGroup>
       </Card>
       <Row>
-        {heros.map(item => (
+        {heros.filter(item => filterKey === 0 || item.hero_type === filterKey).reverse().map(item => (
           <Col key={item.ename} span={3} className={styles.heroitem}>
             <img src={`https://game.gtimg.cn/images/yxzj/img201606/heroimg/${item.ename}/${item.ename}.jpg`} />
             <p>{item.cname}</p>
@@ -43,4 +82,5 @@ const Hero: FC<PageProps> = (props) => {
     </div>
   );
 }
+
 export default connect(({ hero }: { hero: HeroModelState }) => ({ hero }))(Hero);

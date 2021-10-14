@@ -1,7 +1,7 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
-  dva: {},
+  dva: { immer: true, hmr: false, },
   antd: {},
   nodeModulesTransform: {
     type: 'none',

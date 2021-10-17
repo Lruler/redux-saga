@@ -20,7 +20,6 @@ export interface HeroModelType {
   namespace: 'hero';
   state: HeroModelState;
   effects: {
-    query: Effect;
     fetch: Effect;
   };
   reducers: {
@@ -79,12 +78,10 @@ const HeroModel: HeroModelType = {
         },
       });
     },
-    *query({ payload }, { call, put }) {
-
-    },
   },
   reducers: {
     save(state, action) {
+      console.log(action);
       return {
         ...state,
         ...action.payload,
